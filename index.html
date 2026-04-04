@@ -143,7 +143,7 @@
                     <input type="text" id="socialInsurance" value="750,000" onfocus="unformat(this)" onblur="format(this); calculate()">
                 </div>
                 <div class="form-group">
-                    <label>c. 基礎控除</label>
+                    <label>c. 基礎控除（編集可能）</label>
                     <input type="text" id="basicDeduction" value="480,000" onfocus="unformat(this)" onblur="format(this); calculate()">
                 </div>
                 
@@ -157,6 +157,9 @@
                 <div class="form-group"><label>f. 不動産所得</label><input type="text" id="realEstate" value="0" onfocus="unformat(this)" onblur="format(this); calculate()"></div>
                 <div class="form-group"><label>h. 上場株式等の配当等</label><input type="text" id="dividend" value="0" onfocus="unformat(this)" onblur="format(this); calculate()"></div>
                 <div class="form-group"><label>i. 上場株式等の譲渡所得</label><input type="text" id="capitalGain" value="0" onfocus="unformat(this)" onblur="format(this); calculate()"></div>
+                
+                <h4 style="margin-top:20px; border-bottom: 1px solid #ccc;">ふるさと納税</h4>
+                <div class="form-group"><label>g. ふるさと納税（寄付額）[円]</label><input type="text" id="donation" value="0" onfocus="unformat(this)" onblur="format(this); calculate()"></div>
             </div>
 
             <div class="results-panel">
@@ -169,7 +172,7 @@
                 <div class="result-row"><span>適用所得税率</span><span id="resTaxRate">0 %</span></div>
                 <div class="result-row"><span>住民税所得割額（年）</span><span id="resResidentTaxYear">0 円</span></div>
                 <div class="result-row"><span>住民税（月額目安）</span><span id="resResidentTaxMonth">0 円</span></div>
-                <h4 style="margin-top:20px;">控除内訳</h4>
+                <h4 style="margin-top:20px;">寄付金控除の内訳</h4>
                 <div class="result-row"><span>所得税からの控除</span><span id="resDonationIncomeTax">0 円</span></div>
                 <div class="result-row"><span>住民税控除（基本分）</span><span id="resDonationResBasic">0 円</span></div>
                 <div class="result-row"><span>住民税控除（特例分）</span><span id="resDonationResSpecial">0 円</span></div>
@@ -259,7 +262,7 @@
             </div>
             <div class="form-group">
                 <label>氏名／コールサイン（任意）</label>
-                <input type="text" id="inquiryName" placeholder="例: 山辺 直人">
+                <input type="text" id="inquiryName" placeholder="例: 田中 太郎">
             </div>
             <div class="form-group">
                 <label>内容</label>
@@ -319,6 +322,7 @@
         const realEstate = getNum('realEstate');
         const dividend = getNum('dividend');
         const capitalGain = getNum('capitalGain');
+        const donation = getNum('donation');
 
         const lifeDedInc = Math.min(120000, calcLifeInsDeduction(getNum('newLifeIns'), false) + calcLifeInsDeduction(getNum('careMedIns'), false) + calcLifeInsDeduction(getNum('newAnnuityIns'), false));
         const lifeDedRes = Math.min(70000, calcLifeInsDeduction(getNum('newLifeIns'), true) + calcLifeInsDeduction(getNum('careMedIns'), true) + calcLifeInsDeduction(getNum('newAnnuityIns'), true));
@@ -348,7 +352,19 @@
         let residentTaxSogo = (Math.max(0, sogoIncome - (socialIns + Math.min(430000, basicDed) + lifeDedRes + medical))) * 0.10;
         let totalResidentTax = residentTaxSogo + (mode === 'bunri' ? (dividend + capitalGain) * 0.05 : capitalGain * 0.05);
 
+        // ふるさと納税限度額計算
         let limit = (totalResidentTax * 0.2) / (1 - 0.1 - taxRate * 1.021) + 2000;
+
+        // 入力された寄付額に基づく控除額の計算
+        let eligibleDonation = Math.max(0, donation - 2000);
+        let donIncomeTax = eligibleDonation * taxRate * 1.021;
+        let donResBasic = eligibleDonation * 0.10;
+        let donResSpecial = eligibleDonation * (1 - 0.10 - taxRate * 1.021);
+        
+        // 特例分の限度額チェック (住民税所得割額の2割)
+        if(donResSpecial > totalResidentTax * 0.2) {
+            donResSpecial = totalResidentTax * 0.2;
+        }
 
         const f = (n) => Math.floor(n).toLocaleString();
         document.getElementById('resLimit').innerText = f(limit) + " 円";
@@ -356,9 +372,14 @@
         document.getElementById('resLifeDeduction').innerText = f(lifeDedInc) + " 円";
         document.getElementById('resTotalDeduction').innerText = f(totalDeductionInc) + " 円";
         document.getElementById('resTaxableInc').innerText = f(taxableInc) + " 円";
-        document.getElementById('resTaxRate').innerText = (taxRate * 100) + " %";
+        document.getElementById('resTaxRate').innerText = (taxRate * 100).toFixed(0) + " %";
         document.getElementById('resResidentTaxYear').innerText = f(totalResidentTax) + " 円";
         document.getElementById('resResidentTaxMonth').innerText = f(totalResidentTax / 12) + " 円";
+
+        // 寄付金控除の内訳表示更新
+        document.getElementById('resDonationIncomeTax').innerText = f(donIncomeTax) + " 円";
+        document.getElementById('resDonationResBasic').innerText = f(donResBasic) + " 円";
+        document.getElementById('resDonationResSpecial').innerText = f(donResSpecial) + " 円";
     }
 
     function sendEmail() {
