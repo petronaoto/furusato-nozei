@@ -3,163 +3,111 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ふるさと納税シミュレーター</title>
+    <title>ふるさと納税シミュレーター v1.1</title>
     <style>
-        /* CSS Variables for theming */
         :root {
-            --primary-color: #2b6cb0;
-            --secondary-color: #f7fafc;
-            --text-color: #2d3748;
+            --primary-color: #2c5282;
+            --accent-color: #ed8936;
+            --bg-light: #f7fafc;
             --border-color: #e2e8f0;
-            --bg-overlay: rgba(255, 255, 255, 0.9);
+            --text-dark: #2d3748;
+            --white: rgba(255, 255, 255, 0.95);
         }
 
         body, html {
             margin: 0;
             padding: 0;
-            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
-            color: var(--text-color);
-            background-color: #edf2f7;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--text-dark);
             height: 100%;
         }
 
-        /* Nano Bananaの背景画像用クラス */
         .bg-container {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('nanobanana-bg.jpg'); /* ここに背景画像を設定します */
+            background-image: url('nanobanana-bg.jpg');
             background-size: cover;
             background-position: center;
             z-index: -1;
+            background-color: #ebf8ff;
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 40px auto;
-            background: var(--bg-overlay);
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             overflow: hidden;
+            border: 1px solid var(--border-color);
         }
 
-        /* Tabs */
         .tabs {
             display: flex;
             background: var(--primary-color);
-            flex-wrap: wrap;
+            overflow-x: auto;
         }
         .tab-button {
             flex: 1;
-            padding: 15px;
-            text-align: center;
-            color: white;
-            cursor: pointer;
+            padding: 18px 10px;
             border: none;
             background: none;
-            font-size: 16px;
-            transition: background 0.3s;
+            color: white;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: 0.3s;
         }
         .tab-button:hover, .tab-button.active {
-            background: rgba(0,0,0,0.2);
-            font-weight: bold;
+            background: rgba(255,255,255,0.15);
+            box-shadow: inset 0 -4px 0 var(--accent-color);
         }
 
-        /* Tab Content */
         .tab-content {
             display: none;
-            padding: 30px;
+            padding: 40px;
+            line-height: 1.6;
         }
         .tab-content.active {
             display: block;
-            animation: fadeIn 0.5s;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
 
-        /* Forms & Inputs */
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-        input[type="number"], select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
+        .tab-content h2 { border-bottom: 2px solid var(--primary-color); padding-bottom: 10px; margin-top: 0; }
+        .tab-content h3 { color: var(--primary-color); margin-top: 25px; }
 
-        /* Results */
-        .results-panel {
-            background: var(--secondary-color);
-            padding: 20px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-        }
-        .result-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px dashed #cbd5e0;
-        }
-        .result-item:last-child {
-            border-bottom: none;
-        }
-        .highlight-result {
-            font-size: 1.2em;
-            color: #c53030;
-            font-weight: bold;
-        }
+        /* Forms & Layout */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
 
-        /* Buttons & Links */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-size: 14px; font-weight: 600; }
+        input[type="text"], select, textarea {
+            width: 100%; padding: 12px; border: 2px solid var(--border-color);
+            border-radius: 8px; font-size: 16px; box-sizing: border-box;
+        }
+        input:focus { outline: none; border-color: var(--primary-color); }
+
+        /* Results Panel */
+        .results-panel { background: #f1f5f9; padding: 25px; border-radius: 12px; border: 1px solid #cbd5e1; }
+        .result-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #e2e8f0; }
+        .result-row.main { color: #c53030; font-weight: 800; font-size: 1.3em; border-bottom: 2px solid #feb2b2; }
+
+        /* Wireframe Styles */
+        .wf-box { border: 2px solid #4a5568; padding: 20px; margin: 20px 0; background: #edf2f7; position: relative; }
+        .wf-label { position: absolute; top: -12px; left: 15px; background: #4a5568; color: white; padding: 2px 10px; font-size: 12px; border-radius: 4px; }
+        .wf-arrow { text-align: center; font-size: 24px; color: #4a5568; margin: 10px 0; }
+
         .btn {
-            display: inline-block;
-            background: var(--primary-color);
-            color: white;
-            padding: 12px 24px;
-            border-radius: 6px;
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
+            background: var(--primary-color); color: white; padding: 14px 28px;
+            border-radius: 8px; border: none; cursor: pointer; font-size: 16px; font-weight: 600; width: 100%;
         }
-        .btn:hover {
-            background: #2c5282;
-        }
+        .btn:hover { opacity: 0.9; }
 
-        /* Wireframe for Explain Tab */
-        .wireframe-box {
-            border: 2px dashed #a0aec0;
-            background: #e2e8f0;
-            padding: 40px;
-            text-align: center;
-            color: #4a5568;
-            margin: 20px 0;
-            border-radius: 8px;
-        }
-
-        footer {
-            text-align: center;
-            padding: 20px;
-            font-size: 14px;
-            color: #718096;
-        }
+        footer { text-align: center; padding: 25px; font-size: 13px; color: #a0aec0; }
     </style>
 </head>
 <body>
@@ -168,18 +116,17 @@
 
 <div class="container">
     <div class="tabs">
-        <button class="tab-button active" onclick="openTab('sim')">限度額シミュレーション</button>
-        <button class="tab-button" onclick="openTab('explain')">解説</button>
-        <button class="tab-button" onclick="openTab('terms')">本サイトのご利用について</button>
-        <button class="tab-button" onclick="openTab('privacy')">プライバシーポリシー</button>
-        <button class="tab-button" onclick="openTab('contact')">お問い合わせ</button>
+        <button class="tab-button active" onclick="openTab(event, 'sim')">限度額シミュレーション</button>
+        <button class="tab-button" onclick="openTab(event, 'explain')">解説</button>
+        <button class="tab-button" onclick="openTab(event, 'terms')">本サイトのご利用について</button>
+        <button class="tab-button" onclick="openTab(event, 'privacy')">プライバシーポリシー</button>
+        <button class="tab-button" onclick="openTab(event, 'contact')">お問い合わせ</button>
     </div>
 
     <div id="sim" class="tab-content active">
-        <h2>ふるさと納税 限度額シミュレーション</h2>
         <div class="grid">
-            <div>
-                <h3>入力項目</h3>
+            <div class="input-section">
+                <h3>収入・控除入力</h3>
                 <div class="form-group">
                     <label>計算モード</label>
                     <select id="taxMode" onchange="calculate()">
@@ -188,145 +135,138 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>a. 支払金額 (給与収入) [円]</label>
-                    <input type="number" id="income" value="5000000" step="10000" oninput="calculate()">
+                    <label>a. 支払金額（給与収入）</label>
+                    <input type="text" id="income" value="5,000,000" onfocus="unformat(this)" onblur="format(this); calculate()">
                 </div>
                 <div class="form-group">
-                    <label>b. 社会保険料総額 [円]</label>
-                    <input type="number" id="socialInsurance" value="750000" step="10000" oninput="calculate()">
+                    <label>b. 社会保険料計</label>
+                    <input type="text" id="socialInsurance" value="750,000" onfocus="unformat(this)" onblur="format(this); calculate()">
                 </div>
                 <div class="form-group">
-                    <label>c. 基礎控除 [円]</label>
-                    <input type="number" id="basicDeduction" value="480000" readonly>
+                    <label>c. 基礎控除</label>
+                    <input type="text" id="basicDeduction" value="480,000" onfocus="unformat(this)" onblur="format(this); calculate()">
                 </div>
-                <div class="form-group">
-                    <label>d. 生命保険料控除 [円]</label>
-                    <input type="number" id="lifeInsurance" value="0" step="1000" oninput="calculate()" placeholder="一般・年金・介護の合計控除額">
-                </div>
-                <div class="form-group">
-                    <label>e. 医療費控除等 [円]</label>
-                    <input type="number" id="medicalDeduction" value="0" step="1000" oninput="calculate()">
-                </div>
-                <div class="form-group">
-                    <label>f. 不動産所得 [円]</label>
-                    <input type="number" id="realEstate" value="0" step="10000" oninput="calculate()">
-                </div>
-                <div class="form-group">
-                    <label>h. 上場株式等の配当等 [円]</label>
-                    <input type="number" id="dividend" value="0" step="10000" oninput="calculate()">
-                </div>
-                <div class="form-group">
-                    <label>i. 上場株式等の譲渡所得 [円]</label>
-                    <input type="number" id="capitalGain" value="0" step="10000" oninput="calculate()">
-                </div>
-                <div class="form-group">
-                    <label>g. ふるさと納税（寄付額）[円]</label>
-                    <input type="number" id="donation" value="0" step="1000" oninput="calculate()">
-                </div>
+                
+                <h4 style="margin-top:20px; border-bottom: 1px solid #ccc;">生命保険料（新制度）</h4>
+                <div class="form-group"><label>新生命保険料</label><input type="text" id="newLifeIns" value="0" onfocus="unformat(this)" onblur="format(this); calculate()"></div>
+                <div class="form-group"><label>介護医療保険料</label><input type="text" id="careMedIns" value="0" onfocus="unformat(this)" onblur="format(this); calculate()"></div>
+                <div class="form-group"><label>新個人年金料</label><input type="text" id="newAnnuityIns" value="0" onfocus="unformat(this)" onblur="format(this); calculate()"></div>
+
+                <h4 style="margin-top:20px; border-bottom: 1px solid #ccc;">所得関連</h4>
+                <div class="form-group"><label>e. 医療費控除等</label><input type="text" id="medicalDeduction" value="0" onfocus="unformat(this)" onblur="format(this); calculate()"></div>
+                <div class="form-group"><label>f. 不動産所得</label><input type="text" id="realEstate" value="0" onfocus="unformat(this)" onblur="format(this); calculate()"></div>
+                <div class="form-group"><label>h. 上場株式等の配当等</label><input type="text" id="dividend" value="0" onfocus="unformat(this)" onblur="format(this); calculate()"></div>
+                <div class="form-group"><label>i. 上場株式等の譲渡所得</label><input type="text" id="capitalGain" value="0" onfocus="unformat(this)" onblur="format(this); calculate()"></div>
             </div>
 
             <div class="results-panel">
-                <h3>計算結果</h3>
-                <div class="result-item highlight-result">
-                    <span>a. 寄付金限度額（目安）</span>
-                    <span id="resLimit">0 円</span>
-                </div>
-                <div class="result-item">
-                    <span>b. 給与所得控除後金額</span>
-                    <span id="resSalaryInc">0 円</span>
-                </div>
-                <div class="result-item">
-                    <span>c. 所得控除額合計</span>
-                    <span id="resTotalDeduction">0 円</span>
-                </div>
-                <div class="result-item">
-                    <span>d. 課税所得額</span>
-                    <span id="resTaxableInc">0 円</span>
-                </div>
-                <div class="result-item">
-                    <span>e. 適用される所得税率</span>
-                    <span id="resTaxRate">0 %</span>
-                </div>
-                <div class="result-item">
-                    <span>f. 所得税額 (総合/分離合計)</span>
-                    <span id="resIncomeTax">0 円</span>
-                </div>
-                <div class="result-item">
-                    <span>h. 住民税所得割額 (年間)</span>
-                    <span id="resResidentTaxYear">0 円</span>
-                </div>
-                <div class="result-item">
-                    <span>h. 住民税所得割額 (月額目安)</span>
-                    <span id="resResidentTaxMonth">0 円</span>
-                </div>
-                <br>
-                <h4>寄付金控除の内訳</h4>
-                <div class="result-item">
-                    <span>i. 所得税からの控除額</span>
-                    <span id="resDonationIncomeTax">0 円</span>
-                </div>
-                <div class="result-item">
-                    <span>j. 住民税からの控除(基本分)</span>
-                    <span id="resDonationResBasic">0 円</span>
-                </div>
-                <div class="result-item">
-                    <span>k. 住民税からの控除(特例分)</span>
-                    <span id="resDonationResSpecial">0 円</span>
-                </div>
+                <h3>シミュレーション結果</h3>
+                <div class="result-row main"><span>寄付金限度額（目安）</span><span id="resLimit">0 円</span></div>
+                <div class="result-row"><span>給与所得控除後金額</span><span id="resSalaryInc">0 円</span></div>
+                <div class="result-row"><span>生命保険料控除額</span><span id="resLifeDeduction">0 円</span></div>
+                <div class="result-row"><span>所得控除額合計</span><span id="resTotalDeduction">0 円</span></div>
+                <div class="result-row"><span>課税所得額</span><span id="resTaxableInc">0 円</span></div>
+                <div class="result-row"><span>適用所得税率</span><span id="resTaxRate">0 %</span></div>
+                <div class="result-row"><span>住民税所得割額（年）</span><span id="resResidentTaxYear">0 円</span></div>
+                <div class="result-row"><span>住民税（月額目安）</span><span id="resResidentTaxMonth">0 円</span></div>
+                <h4 style="margin-top:20px;">控除内訳</h4>
+                <div class="result-row"><span>所得税からの控除</span><span id="resDonationIncomeTax">0 円</span></div>
+                <div class="result-row"><span>住民税控除（基本分）</span><span id="resDonationResBasic">0 円</span></div>
+                <div class="result-row"><span>住民税控除（特例分）</span><span id="resDonationResSpecial">0 円</span></div>
             </div>
         </div>
     </div>
 
     <div id="explain" class="tab-content">
-        <h2>ふるさと納税と税制の仕組み</h2>
-        <p>このシミュレーターは、以下の総務省の算定式に基づき、寄付金の限度額を計算しています。</p>
-        <p>参照元: <a href="https://www.soumu.go.jp/main_sosiki/jichi_zeisei/czaisei/czaisei_seido/furusato/mechanism/deduction.html" target="_blank">総務省 ふるさと納税のしくみ</a></p>
+        <h2>計算ロジックの詳細解説</h2>
+        <p>当アプリでは、日本の税制に基づき以下のステップで寄付金限度額を算出しています。</p>
         
-        <div class="wireframe-box">
-            [画像: 総合課税と申告分離課税の違いを図解したインフォグラフィック]
+        <div class="wf-box">
+            <div class="wf-label">STEP 1: 所得金額の算出</div>
+            <p><strong>給与所得 = 支払金額 － 給与所得控除</strong></p>
+            <p>給与所得控除は、収入に応じて55万円から最大195万円まで段階的に計算されます。</p>
         </div>
-        
-        <h3>控除の3段構え</h3>
-        <ol>
-            <li><strong>所得税からの控除:</strong> (ふるさと納税額 - 2,000円) × 所得税の税率</li>
-            <li><strong>住民税からの控除（基本分）:</strong> (ふるさと納税額 - 2,000円) × 10%</li>
-            <li><strong>住民税からの控除（特例分）:</strong> (ふるさと納税額 - 2,000円) × (100% - 10% - 所得税率)</li>
-        </ol>
-        <p>※特例分が住民税所得割額の20%を超えない範囲が、実質負担2,000円となる限度額の目安です。</p>
 
-        <div class="wireframe-box">
-            [画像: 寄付金がどのように税金から控除されるかを示すフローチャート]
+        <div class="wf-box">
+            <div class="wf-label">STEP 2: 所得控除の適用</div>
+            <p><strong>課税所得 = 所得金額 － 所得控除合計</strong></p>
+            <p>所得控除には、社会保険料、基礎控除（本アプリで編集可）、医療費控除、そして自動計算された生命保険料控除が含まれます。</p>
         </div>
+
+        <div class="wf-box">
+            <div class="wf-label">STEP 3: 生命保険料控除のロジック</div>
+            <p>平成24年以降の「新制度」に基づき、各区分（一般・介護・年金）で最大4万円、合計で所得税12万円・住民税7万円を上限として控除額を算出します。</p>
+        </div>
+
+        <div class="wf-box">
+            <div class="wf-label">STEP 4: ふるさと納税限度額の算定</div>
+            <p>実質自己負担2,000円で済む上限額は、住民税所得割額の20%（特例分上限）をベースに、以下の数式で逆算しています。</p>
+            <p style="background:#fff; padding:10px; font-family:monospace;">上限額 = (住民税所得割額 × 20%) / (100% - 10% - 所得税率 × 1.021) + 2000</p>
+        </div>
+
+        <h3>参照元</h3>
+        <ul>
+            <li><a href="https://www.soumu.go.jp/main_sosiki/jichi_zeisei/czaisei/czaisei_seido/furusato/mechanism/deduction.html" target="_blank">総務省：ふるさと納税のしくみ</a></li>
+            <li><a href="https://www.nta.go.jp/taxes/shiraberu/taxanswer/shotoku/1141.htm" target="_blank">国税庁：生命保険料控除</a></li>
+        </ul>
     </div>
 
     <div id="terms" class="tab-content">
         <h2>本サイトのご利用について</h2>
-        <p>本サイト「ふるさと納税シミュレーター」は、ふるさと納税における寄付上限額の目安を計算するためのツールです。</p>
+        <h3>1. サービスの目的</h3>
+        <p>本サイト「ふるさと納税シミュレーター」は、利用者がふるさと納税を行う際の寄付上限額を概算するために提供されるツールです。本サイトの利用は、利用者の自己責任において行われるものとします。</p>
+        
+        <h3>2. 計算結果の正確性について</h3>
+        <p>当アプリで算出される金額は、入力された情報に基づいた「目安」であり、実際の控除額を保証するものではありません。以下の要因により、実際の税額とは異なる場合があります：</p>
         <ul>
-            <li><strong>免責事項:</strong> 本シミュレーターの計算結果はあくまで目安であり、実際の控除額や税額を保証するものではありません。正確な税額計算や確定申告につきましては、管轄の税務署または税理士等の専門家にご相談ください。</li>
-            <li><strong>計算の前提:</strong> 本ツールは一般的な給与所得者等を想定した簡易計算を行っております。住宅ローン控除など、一部の複雑な税制には完全対応していない場合があります。</li>
-            <li><strong>著作権:</strong> 本サイトのコンテンツ、デザイン、構造に関する著作権は管理者に帰属します。</li>
+            <li>住宅ローン控除やiDeCo等の他の税額控除。</li>
+            <li>自治体独自の税率設定（標準税率以外を採用している場合）。</li>
+            <li>年度途中の税制改正。</li>
         </ul>
+        
+        <h3>3. 免責事項</h3>
+        <p>管理者は、本サイトの利用によって生じたいかなる損害（直接的・間接的を問わず）についても、一切の責任を負いません。正確な税額計算や確定申告については、必ず所轄の税務署または税理士にご相談ください。</p>
+        
+        <h3>4. 知的財産権</h3>
+        <p>本サイトに含まれるプログラム、デザイン、コンテンツに関する著作権その他の知的財産権は、管理者（Naoto Yamabe）に帰属します。</p>
     </div>
 
     <div id="privacy" class="tab-content">
         <h2>プライバシーポリシー</h2>
-        <p>本サイトは、ユーザーのプライバシー保護を第一に考えています。</p>
-        <ul>
-            <li><strong>データの収集・保存:</strong> 本シミュレーターで入力された金額等のデータは、すべてユーザーのブラウザ上でJavaScriptを用いて処理されており、外部サーバーへの送信、保存、収集は一切行っておりません。</li>
-            <li><strong>アクセス解析:</strong> サイトの利便性向上のため、匿名化されたアクセスログを取得する場合がありますが、個人を特定できる情報は含まれません。</li>
-            <li><strong>お問い合わせ時の個人情報:</strong> お問い合わせメールに記載されたお名前やメールアドレス等の情報は、お問い合わせに対する回答の目的のみに使用し、第三者に提供することはありません。</li>
-        </ul>
+        <h3>1. 個人情報の収集・利用目的</h3>
+        <p>本サイトは、利用者の個人情報を収集することを目的としていません。「シミュレーション」機能において入力される数値（年収、控除額等）は、すべて利用者のブラウザ上で一時的に処理されるのみであり、外部サーバーに送信または保存されることはありません。</p>
+        
+        <h3>2. お問い合わせにおける個人情報</h3>
+        <p>「お問い合わせ」タブよりメールを送付いただく際、メール本文に記載された氏名やメールアドレス等の情報は、お問い合わせに対する回答および本人確認の目的でのみ利用し、適切に管理いたします。</p>
+        
+        <h3>3. 第三者提供の禁止</h3>
+        <p>収集した個人情報を、法令に基づく場合を除き、本人の同意なく第三者に提供することはありません。</p>
+        
+        <h3>4. セキュリティ</h3>
+        <p>本サイトは、入力されたデータがネットワーク上を流れないクライアントサイド（ブラウザ内）完結型の設計を採用しており、プライバシー保護の最大化を図っています。</p>
     </div>
 
     <div id="contact" class="tab-content">
         <h2>お問い合わせ</h2>
-        <p>バグの報告、計算エラーのご指摘、その他のお問い合わせにつきましては、以下のボタンからメールにてご連絡ください。</p>
-        <p>
-            <a href="mailto:petro.naoto@gmail.com?subject=【ふるさと納税シミュレーター】お問い合わせ&body=お問い合わせの種類（バグ/計算エラー/その他）：%0D%0A氏名／コールサイン（任意）：%0D%0A%0D%0Aお問い合わせ内容：%0D%0A" class="btn">
-                メールを作成する
-            </a>
-        </p>
+        <div style="max-width: 600px;">
+            <div class="form-group">
+                <label>お問い合わせの種類</label>
+                <select id="inquiryType">
+                    <option value="バグ報告">バグ報告</option>
+                    <option value="計算エラー">計算エラー</option>
+                    <option value="その他">その他</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>氏名／コールサイン（任意）</label>
+                <input type="text" id="inquiryName" placeholder="例: 山辺 直人">
+            </div>
+            <div class="form-group">
+                <label>内容</label>
+                <textarea id="inquiryContent" rows="5" placeholder="具体的な状況をご記入ください"></textarea>
+            </div>
+            <button class="btn" onclick="sendEmail()">メールを作成する</button>
+        </div>
     </div>
 
     <footer>
@@ -335,26 +275,54 @@
 </div>
 
 <script>
-    function openTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        event.currentTarget.classList.add('active');
+    function openTab(evt, tabId) {
+        let i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) tabcontent[i].classList.remove("active");
+        tablinks = document.getElementsByClassName("tab-button");
+        for (i = 0; i < tablinks.length; i++) tablinks[i].classList.remove("active");
+        document.getElementById(tabId).classList.add("active");
+        evt.currentTarget.classList.add("active");
+    }
+
+    function format(el) {
+        let val = el.value.replace(/,/g, '');
+        if (!isNaN(val) && val !== "") el.value = Number(val).toLocaleString();
+    }
+    function unformat(el) {
+        el.value = el.value.replace(/,/g, '');
+    }
+    function getNum(id) {
+        return Number(document.getElementById(id).value.replace(/,/g, '')) || 0;
+    }
+
+    function calcLifeInsDeduction(amount, isResident) {
+        if (!isResident) {
+            if (amount <= 20000) return amount;
+            if (amount <= 40000) return amount * 0.5 + 10000;
+            if (amount <= 80000) return amount * 0.25 + 20000;
+            return 40000;
+        } else {
+            if (amount <= 12000) return amount;
+            if (amount <= 32000) return amount * 0.5 + 6000;
+            if (amount <= 56000) return amount * 0.25 + 14000;
+            return 28000;
+        }
     }
 
     function calculate() {
         const mode = document.getElementById('taxMode').value;
-        const income = Number(document.getElementById('income').value) || 0;
-        const socialIns = Number(document.getElementById('socialInsurance').value) || 0;
-        const basicDed = Number(document.getElementById('basicDeduction').value) || 0;
-        const lifeIns = Number(document.getElementById('lifeInsurance').value) || 0;
-        const medical = Number(document.getElementById('medicalDeduction').value) || 0;
-        const realEstate = Number(document.getElementById('realEstate').value) || 0;
-        const dividend = Number(document.getElementById('dividend').value) || 0;
-        const capitalGain = Number(document.getElementById('capitalGain').value) || 0;
-        const donation = Number(document.getElementById('donation').value) || 0;
+        const income = getNum('income');
+        const socialIns = getNum('socialInsurance');
+        const basicDed = getNum('basicDeduction');
+        const medical = getNum('medicalDeduction');
+        const realEstate = getNum('realEstate');
+        const dividend = getNum('dividend');
+        const capitalGain = getNum('capitalGain');
 
-        // 給与所得控除の計算 (簡易版)
+        const lifeDedInc = Math.min(120000, calcLifeInsDeduction(getNum('newLifeIns'), false) + calcLifeInsDeduction(getNum('careMedIns'), false) + calcLifeInsDeduction(getNum('newAnnuityIns'), false));
+        const lifeDedRes = Math.min(70000, calcLifeInsDeduction(getNum('newLifeIns'), true) + calcLifeInsDeduction(getNum('careMedIns'), true) + calcLifeInsDeduction(getNum('newAnnuityIns'), true));
+
         let salaryDeduction = 0;
         if(income <= 1625000) salaryDeduction = 550000;
         else if(income <= 1800000) salaryDeduction = income * 0.4 - 100000;
@@ -364,83 +332,44 @@
         else salaryDeduction = 1950000;
         
         let salaryIncome = Math.max(0, income - salaryDeduction);
+        let sogoIncome = salaryIncome + realEstate + (mode === 'sogo' ? dividend : 0);
+        let totalDeductionInc = socialIns + basicDed + lifeDedInc + medical;
+        let taxableInc = Math.max(0, sogoIncome - totalDeductionInc);
 
-        // 総合課税所得の計算
-        let sogoIncome = salaryIncome + realEstate;
-        if(mode === 'sogo') {
-            sogoIncome += dividend; // 総合課税を選択した場合、配当を合算
-        }
-
-        // 所得控除額の計算
-        let totalDeduction = socialIns + basicDed + lifeIns + medical;
-
-        // 課税所得 (総合課税分)
-        let taxableIncomeSogo = Math.max(0, sogoIncome - totalDeduction);
-        
-        // 所得税率の決定 (総合課税)
         let taxRate = 0;
-        let taxDeduction = 0;
-        if(taxableIncomeSogo <= 1950000) { taxRate = 0.05; taxDeduction = 0; }
-        else if(taxableIncomeSogo <= 3300000) { taxRate = 0.10; taxDeduction = 97500; }
-        else if(taxableIncomeSogo <= 6950000) { taxRate = 0.20; taxDeduction = 427500; }
-        else if(taxableIncomeSogo <= 9000000) { taxRate = 0.23; taxDeduction = 636000; }
-        else if(taxableIncomeSogo <= 18000000) { taxRate = 0.33; taxDeduction = 1536000; }
-        else if(taxableIncomeSogo <= 40000000) { taxRate = 0.40; taxDeduction = 2796000; }
-        else { taxRate = 0.45; taxDeduction = 4796000; }
+        if(taxableInc <= 1950000) taxRate = 0.05;
+        else if(taxableInc <= 3300000) taxRate = 0.10;
+        else if(taxableInc <= 6950000) taxRate = 0.20;
+        else if(taxableInc <= 9000000) taxRate = 0.23;
+        else if(taxableInc <= 18000000) taxRate = 0.33;
+        else if(taxableInc <= 40000000) taxRate = 0.40;
+        else taxRate = 0.45;
 
-        // 所得税額 (復興特別所得税1.021を考慮)
-        let incomeTaxSogo = (taxableIncomeSogo * taxRate - taxDeduction) * 1.021;
-        
-        // 分離課税分の税金 (所得税15.315%, 住民税5%)
-        let sepIncomeTax = 0;
-        let sepResidentTax = 0;
-        if(mode === 'bunri') {
-            sepIncomeTax = (dividend + capitalGain) * 0.15315;
-            sepResidentTax = (dividend + capitalGain) * 0.05;
-        } else {
-            sepIncomeTax = capitalGain * 0.15315;
-            sepResidentTax = capitalGain * 0.05;
-        }
+        let residentTaxSogo = (Math.max(0, sogoIncome - (socialIns + Math.min(430000, basicDed) + lifeDedRes + medical))) * 0.10;
+        let totalResidentTax = residentTaxSogo + (mode === 'bunri' ? (dividend + capitalGain) * 0.05 : capitalGain * 0.05);
 
-        let totalIncomeTax = Math.max(0, incomeTaxSogo) + sepIncomeTax;
-
-        // 住民税所得割額 (総合課税分は一律10%)
-        let residentTaxSogo = taxableIncomeSogo * 0.10;
-        let totalResidentTax = residentTaxSogo + sepResidentTax;
-
-        // ふるさと納税限度額の目安計算
-        // 限度額 = (住民税所得割額 * 20%) / (100% - 10% - 所得税率) + 2000
         let limit = (totalResidentTax * 0.2) / (1 - 0.1 - taxRate * 1.021) + 2000;
 
-        // 実際の寄付に伴う控除額計算
-        let eligibleDonation = Math.max(0, donation - 2000);
-        let donIncomeTax = eligibleDonation * taxRate * 1.021;
-        let donResBasic = eligibleDonation * 0.10;
-        let donResSpecial = eligibleDonation * (1 - 0.10 - taxRate * 1.021);
-        
-        // 特例分の限度額チェック (住民税所得割額の2割)
-        if(donResSpecial > totalResidentTax * 0.2) {
-            donResSpecial = totalResidentTax * 0.2;
-        }
-
-        // 表示の更新 (カンマ区切り)
-        const format = (num) => Math.floor(num).toLocaleString();
-
-        document.getElementById('resLimit').innerText = format(limit) + ' 円';
-        document.getElementById('resSalaryInc').innerText = format(salaryIncome) + ' 円';
-        document.getElementById('resTotalDeduction').innerText = format(totalDeduction) + ' 円';
-        document.getElementById('resTaxableInc').innerText = format(taxableIncomeSogo) + ' 円';
-        document.getElementById('resTaxRate').innerText = (taxRate * 100).toFixed(0) + ' %';
-        document.getElementById('resIncomeTax').innerText = format(totalIncomeTax) + ' 円';
-        document.getElementById('resResidentTaxYear').innerText = format(totalResidentTax) + ' 円';
-        document.getElementById('resResidentTaxMonth').innerText = format(totalResidentTax / 12) + ' 円';
-        
-        document.getElementById('resDonationIncomeTax').innerText = format(donIncomeTax) + ' 円';
-        document.getElementById('resDonationResBasic').innerText = format(donResBasic) + ' 円';
-        document.getElementById('resDonationResSpecial').innerText = format(donResSpecial) + ' 円';
+        const f = (n) => Math.floor(n).toLocaleString();
+        document.getElementById('resLimit').innerText = f(limit) + " 円";
+        document.getElementById('resSalaryInc').innerText = f(salaryIncome) + " 円";
+        document.getElementById('resLifeDeduction').innerText = f(lifeDedInc) + " 円";
+        document.getElementById('resTotalDeduction').innerText = f(totalDeductionInc) + " 円";
+        document.getElementById('resTaxableInc').innerText = f(taxableInc) + " 円";
+        document.getElementById('resTaxRate').innerText = (taxRate * 100) + " %";
+        document.getElementById('resResidentTaxYear').innerText = f(totalResidentTax) + " 円";
+        document.getElementById('resResidentTaxMonth').innerText = f(totalResidentTax / 12) + " 円";
     }
 
-    // 初期計算の実行
+    function sendEmail() {
+        const type = document.getElementById('inquiryType').value;
+        const name = document.getElementById('inquiryName').value;
+        const content = document.getElementById('inquiryContent').value;
+        const subject = encodeURIComponent(`【ふるさと納税シミュレーターv1.1】${type}`);
+        const body = encodeURIComponent(`種類: ${type}\n氏名: ${name}\n内容:\n${content}`);
+        window.location.href = `mailto:petro.naoto@gmail.com?subject=${subject}&body=${body}`;
+    }
+
     window.onload = calculate;
 </script>
 </body>
