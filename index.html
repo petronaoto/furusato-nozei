@@ -34,7 +34,7 @@
             background-position: center;
             z-index: -1;
             background-color: #ffffff;
-            opacity: 0.2; /* 背景を薄くして視認性を高める処置 */
+            opacity: 0.5; /* ★ ここを0.2から0.5に変更しました（お好みで0.4〜0.6の間で微調整してください） */
         }
 
         .container {
@@ -43,15 +43,18 @@
             background: var(--white);
             border-radius: 16px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            overflow: hidden;
             border: 1px solid var(--border-color);
         }
 
-        .tabs {
+		.tabs {
             display: flex;
             background: var(--primary-color);
             overflow-x: auto;
+            position: sticky; /* 画面スクロール時に要素を固定する設定 */
+            top: 0;           /* 一番上で固定する */
+            z-index: 100;     /* スクロールした際に、他の文字や画像より手前（上）に表示させる */
         }
+		
         .tab-button {
             flex: 1;
             padding: 18px 10px;
